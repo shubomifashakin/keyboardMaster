@@ -1,14 +1,15 @@
 import { LandingPage } from "./Components/LandingPage";
 import { TextDisplay } from "./Components/TextDisplay";
+
 import { StoreType, gameStore } from "./store";
 
 export default function App() {
-  const { isPlaying, setIsPlaying } = gameStore<StoreType>(function (state) {
+  const { isPlaying } = gameStore<StoreType>(function (state) {
     return state;
   });
 
   return (
-    <div className="text-red-500">
+    <div className="bg-black">
       {!isPlaying ? <LandingPage /> : <TextDisplay />}
     </div>
   );

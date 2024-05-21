@@ -1,17 +1,26 @@
-import { lorem } from "txtgen";
+import * as formText from "txtgen";
+import { moreAdjectives, moreTemplates, possibleNouns } from "./Helpers";
 
+formText.addAdjectives(moreAdjectives);
+formText.addNouns(possibleNouns);
+formText.setNouns(possibleNouns);
+formText.setAdjectives(moreAdjectives);
+
+formText.addTemplates(moreTemplates);
+console.log(formText.getTemplates());
+//forms a random sentence depending on the difficulty
 export function formSentence(diff: string): string {
   if (diff.toLowerCase() === "easy") {
-    return lorem(20, 20);
+    return formText.sentence();
   }
   if (diff.toLowerCase() === "medium") {
-    return lorem(25, 25);
+    return formText.paragraph(1.5);
   }
 
-  return lorem(35, 35);
+  return formText.lorem(37, 37);
 }
 
+//splits a sentence into an array
 export function splitIntoChars(text: string): string[] {
-  console.log(text.split("").length);
   return text.split("");
 }

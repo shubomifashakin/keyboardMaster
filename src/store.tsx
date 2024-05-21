@@ -5,14 +5,25 @@ export type StoreType = {
   difficulty: string;
   difficulties: string[];
   changeDiff(difficulty: number): void;
-  setIsPlaying(): void;
+  setIsPlaying(hasFinished: boolean): void;
+  resetGame(): void;
+};
+
+export type TimeStoreType = {
+  timeUsed: number;
+  incTime(): void;
+  resetTime(): void;
+};
+
+const initialState = {
+  isPlaying: false,
+  difficulty: "Easy",
+  difficulties: ["Easy", "Medium", "Hard"],
 };
 
 export const gameStore = create<StoreType>(function (set) {
   return {
-    isPlaying: false,
-    difficulty: "Easy",
-    difficulties: ["Easy", "Medium", "Hard"],
+    ...initialState,
 
     changeDiff: function (newDifficulty) {
       set((state: StoreType) => ({
@@ -20,10 +31,30 @@ export const gameStore = create<StoreType>(function (set) {
       }));
     },
 
-    setIsPlaying: function () {
-      set((state) => ({
-        isPlaying: !state.isPlaying,
+    setIsPlaying: function (hasFinished) {
+      set(() => ({
+        isPlaying: hasFinished,
       }));
+    },
+
+    resetGame: function () {
+      set(() => initialState);
+    },
+  };
+});
+
+export const timeStore = create<TimeStoreType>(function (set) {
+  return {
+    timeUsed: 1,
+
+    incTime: function () {
+      set((state) => ({
+        timeUsed: state.timeUsed + 1,
+      }));
+    },
+
+    resetTime: function () {
+      set(() => ({ timeUsed: 1 }));
     },
   };
 });
