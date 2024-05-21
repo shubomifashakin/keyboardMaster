@@ -255,7 +255,7 @@ function Results({ points, totalChars, hasFinished }: ResultDetails) {
         speed <= speedHighScore
       ) {
         const updatedScores = JSON.stringify({
-          accuracy: accuracy.toFixed(2),
+          accuracy,
           speed: speedHighScore,
         });
 
@@ -274,10 +274,10 @@ function Results({ points, totalChars, hasFinished }: ResultDetails) {
       ) {
         const updatedScores = JSON.stringify({
           accuracy: accuracyHighScore,
-          speed: speed.toFixed(2),
+          speed,
         });
 
-        //set the new speed
+        //set the new
         localStorage.setItem(difficulty, updatedScores);
 
         setHighScore(updatedScores);
@@ -292,8 +292,8 @@ function Results({ points, totalChars, hasFinished }: ResultDetails) {
         speed > speedHighScore
       ) {
         const updatedScores = JSON.stringify({
-          accuracy: accuracy,
-          speed: speed,
+          accuracy,
+          speed,
         });
 
         localStorage.setItem(difficulty, updatedScores);
