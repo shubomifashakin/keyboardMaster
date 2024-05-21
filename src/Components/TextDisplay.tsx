@@ -95,9 +95,8 @@ function Display({ sentenceChars }: { sentenceChars: string[] }) {
   //confirms if the key clicked was a valid key during an active game
   const checkFn = useCallback(
     function checkKey(e: KeyboardEvent) {
-      return (
-        /^\s|^[a-zA-Z ',?.!;]/.test(e.key) && e.key.length <= 1 && !hasFinished
-      );
+      //tests if it is a letter, punctuation or whitespace
+      return /^[\s\p{P}A-Za-z]$/u.test(e.key) && !hasFinished;
     },
     [hasFinished],
   );

@@ -1,13 +1,11 @@
 import * as formText from "txtgen";
 import { moreAdjectives, moreTemplates, possibleNouns } from "./Helpers";
 
+//adds more nouns,templates and adjectives
 formText.addAdjectives(moreAdjectives);
 formText.addNouns(possibleNouns);
-formText.setNouns(possibleNouns);
-formText.setAdjectives(moreAdjectives);
-
 formText.addTemplates(moreTemplates);
-console.log(formText.getTemplates());
+
 //forms a random sentence depending on the difficulty
 export function formSentence(diff: string): string {
   if (diff.toLowerCase() === "easy") {
