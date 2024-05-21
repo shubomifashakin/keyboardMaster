@@ -15,7 +15,9 @@ export function LandingPage() {
   return (
     <main className="flex h-dvh w-full flex-col items-center justify-center space-y-6 text-white">
       <section className="space-y-2 text-center">
-        <h1 className="text-5xl uppercase tracking-widest">TypeMaster</h1>
+        <h1 className="text-5xl font-bold uppercase tracking-widest">
+          Keyboard Master
+        </h1>
 
         <p
           className=" tracking-wider text-stone-500
@@ -38,6 +40,7 @@ export function LandingPage() {
           {difficulties.map((diff, i) => {
             return (
               <Button
+                key={i}
                 title={diff}
                 onClickFn={() => changeDiff(i)}
                 label={diff}

@@ -4,7 +4,7 @@ import { moreAdjectives, moreTemplates, possibleNouns } from "./Helpers";
 //adds more nouns,templates and adjectives
 formText.addAdjectives(moreAdjectives);
 formText.addNouns(possibleNouns);
-formText.addTemplates(moreTemplates);
+formText.setTemplates(moreTemplates);
 
 //forms a random sentence depending on the difficulty
 export function formSentence(diff: string): string {

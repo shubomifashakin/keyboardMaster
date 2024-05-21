@@ -5,17 +5,13 @@ import { StoreType, TimeStoreType, gameStore, timeStore } from "../store";
 import { formSentence, splitIntoChars } from "../Settings/Actions";
 
 import { defaultTime } from "../Settings/Helpers";
-import {
-  SlHourglass,
-  SlSettings,
-  SlSpeedometer,
-  SlTarget,
-} from "react-icons/sl";
 
-import { BsFillChatRightTextFill } from "react-icons/bs";
+import { SlSettings, SlSpeedometer, SlTarget } from "react-icons/sl";
+
+import { GrPowerReset } from "react-icons/gr";
 
 import { Button } from "./Button";
-import { GrPowerReset } from "react-icons/gr";
+import { Timer } from "./Timer";
 
 type StateDetails = {
   clicked: number;
@@ -83,7 +79,7 @@ function Display({ sentenceChars }: { sentenceChars: string[] }) {
     points: [],
   });
 
-  const { timeUsed, incTime } = timeStore<TimeStoreType>(function (state) {
+  const { timeUsed } = timeStore<TimeStoreType>(function (state) {
     return state;
   });
 
@@ -123,20 +119,6 @@ function Display({ sentenceChars }: { sentenceChars: string[] }) {
     [totalChars, clicked, checkFn, sentenceChars],
   );
 
-  //increase the timer every seconds if the time hasnt reached 40 seconds or the user hasnt finished typing
-  useEffect(
-    function () {
-      const interval = setInterval(function () {
-        if (!hasFinished) {
-          incTime();
-        }
-      }, 1000);
-
-      return () => clearInterval(interval);
-    },
-    [incTime, hasFinished],
-  );
-
   return (
     <>
       <Sentence sentenceChars={sentenceChars} />
@@ -144,7 +126,7 @@ function Display({ sentenceChars }: { sentenceChars: string[] }) {
       <Chars sentenceChars={sentenceChars} clicked={clicked} points={points} />
 
       <div className="flex items-center gap-x-4">
-        <Details />
+        <Details hasFinished={hasFinished} />
 
         <Results
           points={points}
@@ -159,14 +141,11 @@ function Display({ sentenceChars }: { sentenceChars: string[] }) {
 }
 
 function Sentence({ sentenceChars }: { sentenceChars: string[] }) {
-  return (
-    <p className="flex w-fit cursor-default items-center gap-x-1 rounded-lg border-2 border-yellow-300 p-3 text-left text-base tracking-wider text-yellow-300">
-      <span className="flex items-center gap-x-1">
-        <BsFillChatRightTextFill className="text-xl text-yellow-300" />
-        &nbsp;:
-      </span>
+  const sentence = sentenceChars.join("");
 
-      {sentenceChars.join("")}
+  return (
+    <p className="w-fit cursor-default rounded-lg border-2 border-yellow-300 p-3 text-center text-sm tracking-wider text-yellow-300">
+      {sentence}
     </p>
   );
 }
@@ -194,12 +173,12 @@ function Chars({ sentenceChars, clicked, points }: CharDetails) {
   );
 }
 
-const Details = memo(function Details() {
+const Details = memo(function Details({
+  hasFinished,
+}: {
+  hasFinished: boolean;
+}) {
   const { difficulty } = gameStore<StoreType>(function (state) {
-    return state;
-  });
-
-  const { timeUsed } = timeStore<TimeStoreType>(function (state) {
     return state;
   });
 
@@ -209,11 +188,7 @@ const Details = memo(function Details() {
         <SlSettings className="text-lg" />: {difficulty}
       </p>
 
-      <p title="Time left" className="flex items-center gap-x-1">
-        <SlHourglass className="text-lg" />
-        :&nbsp;
-        {`${defaultTime - timeUsed}`.padStart(2, "0")}s
-      </p>
+      <Timer hasFinished={hasFinished} />
     </div>
   );
 });

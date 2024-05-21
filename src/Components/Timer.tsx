@@ -1,32 +1,34 @@
-import { useEffect, useState } from "react";
-import { StoreType, gameStore } from "../store";
+import { useEffect } from "react";
 
-export function Timer() {
-  const [timer, setTimer] = useState<number>(0);
+import { TimeStoreType, timeStore } from "../store";
 
-  const { setIsPlaying } = gameStore<StoreType>(function (state) {
+import { defaultTime } from "../Settings/Helpers";
+import { SlHourglass } from "react-icons/sl";
+
+export function Timer({ hasFinished }: { hasFinished: boolean }) {
+  const { timeUsed, incTime } = timeStore<TimeStoreType>(function (state) {
     return state;
   });
 
+  //increase the time every second if the time hasnt reached 40 seconds or the user hasnt finished typing
   useEffect(
     function () {
-      let interval: number;
-
-      if (timer <= 40) {
-        interval = setInterval(function () {
-          setTimer((c) => c + 1);
-        }, 1000);
-      }
-
-      //if timer is greater than 20 seconds, end the game
-      if (timer > 40) {
-        setIsPlaying(false);
-      }
+      const interval = setInterval(function () {
+        if (!hasFinished) {
+          incTime();
+        }
+      }, 1000);
 
       return () => clearInterval(interval);
     },
-    [timer, setIsPlaying],
+    [incTime, hasFinished],
   );
 
-  return <p className="text-white">Time Left: {40 - timer}s</p>;
+  return (
+    <p title="Time left" className="flex items-center gap-x-1">
+      <SlHourglass className="text-lg" />
+      :&nbsp;
+      {`${defaultTime - timeUsed}`.padStart(2, "0")}s
+    </p>
+  );
 }

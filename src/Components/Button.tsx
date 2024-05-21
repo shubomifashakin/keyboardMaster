@@ -19,7 +19,7 @@ export function Button({
     <button
       title={title}
       type="button"
-      className={`${rounded ? "rounded-full" : "rounded-lg"}  border-2 tracking-wider ${!isDiff ? "text-stone-300" : ""} ${isDiff && diff !== label ? "bg-yellow-500" : ""} ${isDiff && diff === label ? "bg-white text-black" : ""} border-stone-300 p-3 font-semibold  transition-colors duration-300 ease-in-out hover:bg-stone-300 hover:text-black`}
+      className={`${rounded ? "rounded-full" : "rounded-lg"}  border-2 tracking-wider ${!isDiff ? "text-stone-300" : ""} ${isDiff && diff !== label ? "bg-yellow-500" : ""} ${isDiff && diff === label ? "bg-white text-black" : ""} border-stone-300 p-3 font-bold  transition-colors duration-300 ease-in-out hover:bg-stone-300 hover:text-black`}
       onClick={onClickFn}
     >
       {label}
