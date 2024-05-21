@@ -20,7 +20,7 @@ export function Timer() {
 
       //if timer is greater than 20 seconds, end the game
       if (timer > 40) {
-        setIsPlaying();
+        setIsPlaying(true);
       }
 
       return () => clearInterval(interval);
