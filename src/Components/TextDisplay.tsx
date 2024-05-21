@@ -7,8 +7,7 @@ import { formSentence, splitIntoChars } from "../Settings/Actions";
 import { defaultTime } from "../Settings/Helpers";
 
 import { SlSettings, SlSpeedometer, SlTarget } from "react-icons/sl";
-
-import { GrPowerReset } from "react-icons/gr";
+import { VscDebugRestart } from "react-icons/vsc";
 
 import { Button } from "./Button";
 import { Timer } from "./Timer";
@@ -260,7 +259,7 @@ const ResetBtn = memo(function ResetBtn() {
     <Button
       title="Reset"
       onClickFn={handleReset}
-      label={<GrPowerReset className="text-xl" />}
+      label={<VscDebugRestart className="text-xl" />}
       rounded={true}
     />
   );
