@@ -3,9 +3,12 @@ import { create } from "zustand";
 export type StoreType = {
   isPlaying: boolean;
   difficulty: string;
+  diffNum: number;
   difficulties: string[];
+  incDiff(): void;
+  decDiff(): void;
   changeDiff(difficulty: number): void;
-  setIsPlaying(hasFinished: boolean): void;
+  setIsPlaying(isPlaying: boolean): void;
   resetGame(): void;
 };
 
@@ -19,6 +22,7 @@ const initialState = {
   isPlaying: false,
   difficulty: "Easy",
   difficulties: ["Easy", "Medium", "Hard"],
+  diffNum: 0,
 };
 
 export const gameStore = create<StoreType>(function (set) {
@@ -31,9 +35,37 @@ export const gameStore = create<StoreType>(function (set) {
       }));
     },
 
-    setIsPlaying: function (hasFinished) {
+    setIsPlaying: function (isPlaying) {
       set(() => ({
-        isPlaying: hasFinished,
+        isPlaying,
+      }));
+    },
+
+    incDiff: function () {
+      set((state: StoreType) => ({
+        diffNum:
+          state.diffNum < state.difficulties.length - 1 ? state.diffNum + 1 : 0,
+
+        difficulty:
+          state.difficulties[
+            state.diffNum < state.difficulties.length - 1
+              ? state.diffNum + 1
+              : 0
+          ],
+      }));
+    },
+
+    decDiff: function () {
+      set((state: StoreType) => ({
+        diffNum:
+          state.diffNum > 0 ? state.diffNum - 1 : state.difficulties.length - 1,
+
+        difficulty:
+          state.difficulties[
+            state.diffNum > 0
+              ? state.diffNum - 1
+              : state.difficulties.length - 1
+          ],
       }));
     },
 

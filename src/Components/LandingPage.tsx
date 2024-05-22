@@ -1,9 +1,12 @@
+import { useEffect } from "react";
 import { VscDebugStart } from "react-icons/vsc";
+
 import { StoreType, gameStore } from "../store";
+
 import { Button } from "./Button";
 
 export function LandingPage() {
-  const { difficulty, difficulties, changeDiff, setIsPlaying } =
+  const { diffNum, difficulties, decDiff, changeDiff, incDiff, setIsPlaying } =
     gameStore<StoreType>(function (state) {
       return state;
     });
@@ -11,6 +14,31 @@ export function LandingPage() {
   function handleStart(): void {
     setIsPlaying(true);
   }
+
+  useEffect(
+    function () {
+      function startGame(e: KeyboardEvent): void {
+        //when the user clicks enter start the game
+        if (e.key.toLowerCase() === "enter") {
+          setIsPlaying(true);
+        }
+
+        //if the user clicks right go to next difficulty
+        if (e.key.toLowerCase() === "arrowright") {
+          incDiff();
+        }
+
+        //if user clicks left go to previous difficulty
+        if (e.key.toLowerCase() === "arrowleft") {
+          decDiff();
+        }
+      }
+      window.addEventListener("keyup", startGame);
+
+      return () => window.removeEventListener("keyup", startGame);
+    },
+    [setIsPlaying, incDiff, decDiff],
+  );
 
   return (
     <main className="flex h-dvh w-full flex-col items-center justify-center space-y-6 text-white">
@@ -44,8 +72,7 @@ export function LandingPage() {
                 title={diff}
                 onClickFn={() => changeDiff(i)}
                 label={diff}
-                isDiff={true}
-                diff={difficulty}
+                isSelected={diffNum === i}
               />
             );
           })}

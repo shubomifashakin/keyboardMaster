@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useReducer, useState } from "react";
+import { useCallback, useEffect, useReducer } from "react";
 
 import { StoreType, TimeStoreType, gameStore, timeStore } from "../store";
 
@@ -6,28 +6,15 @@ import { formSentence, splitIntoChars } from "../Settings/Actions";
 
 import { defaultTime } from "../Settings/Helpers";
 
-import { SlSettings, SlSpeedometer, SlTarget } from "react-icons/sl";
-import { VscDebugRestart } from "react-icons/vsc";
-
-import { Button } from "./Button";
-import { Timer } from "./Timer";
-import toast from "react-hot-toast";
+import { Results } from "./Results";
+import { ResetBtn } from "./ResetBtn";
+import { Details } from "./Details";
+import { Chars } from "./Character";
+import { Sentence } from "./Sentence";
 
 type StateDetails = {
   clicked: number;
   points: number[];
-};
-
-type CharDetails = {
-  sentenceChars: string[];
-  clicked: number;
-  points: number[];
-};
-
-type ResultDetails = {
-  points: number[];
-  totalChars: number;
-  hasFinished: boolean;
 };
 
 function reducer(
@@ -72,14 +59,20 @@ export function TextDisplay() {
   );
 }
 
+const initialState = {
+  clicked: 0,
+  points: [],
+};
+
 //receives the sentence characters
 function Display({ sentenceChars }: { sentenceChars: string[] }) {
-  const [{ clicked, points }, dispatch] = useReducer(reducer, {
-    clicked: 0,
-    points: [],
+  const [{ clicked, points }, dispatch] = useReducer(reducer, initialState);
+
+  const { timeUsed, resetTime } = timeStore<TimeStoreType>(function (state) {
+    return state;
   });
 
-  const { timeUsed } = timeStore<TimeStoreType>(function (state) {
+  const { resetGame } = gameStore<StoreType>(function (state) {
     return state;
   });
 
@@ -110,13 +103,19 @@ function Display({ sentenceChars }: { sentenceChars: string[] }) {
         if (checkFn(e) && e.key !== sentenceChars[clicked]) {
           dispatch({ label: "failed" });
         }
+
+        //if escape is clicked, reset the game
+        if (e.key.toLowerCase() === "escape") {
+          resetGame();
+          resetTime();
+        }
       }
 
       document.addEventListener("keydown", keyDownFn);
 
       return () => document.removeEventListener("keydown", keyDownFn);
     },
-    [totalChars, clicked, checkFn, sentenceChars],
+    [totalChars, clicked, checkFn, sentenceChars, resetTime, resetGame],
   );
 
   return (
@@ -139,245 +138,3 @@ function Display({ sentenceChars }: { sentenceChars: string[] }) {
     </>
   );
 }
-
-function Sentence({ sentenceChars }: { sentenceChars: string[] }) {
-  const sentence = sentenceChars.join("");
-
-  return (
-    <p className="w-fit cursor-default rounded-lg border-2 border-yellow-300 p-3 text-center text-sm tracking-wider text-yellow-300">
-      {sentence}
-    </p>
-  );
-}
-
-function Chars({ sentenceChars, clicked, points }: CharDetails) {
-  const { timeUsed } = timeStore<TimeStoreType>(function (state) {
-    return state;
-  });
-
-  const timeElapsed = timeUsed === defaultTime;
-
-  return (
-    <div className="flex flex-wrap justify-center gap-y-4  whitespace-pre-wrap rounded-lg py-4 text-center">
-      {sentenceChars.map((char, i) => {
-        return (
-          <span
-            className={`border ${/[\s]/.test(char) ? "border-black px-3.5" : "px-2"} inline-block cursor-default py-1.5 text-center text-3xl font-bold ${clicked === i && !timeElapsed ? "animate-flasInfinite !border-white bg-white text-black" : ""}  ${clicked > i && points[i] ? "!border-white bg-green-800" : ""} ${clicked > i && !points[i] ? "!border-white bg-red-800" : ""} ${timeElapsed && !points[i] ? "!border-white bg-red-800" : ""}`}
-            key={i}
-          >
-            {char}
-          </span>
-        );
-      })}
-    </div>
-  );
-}
-
-const Details = memo(function Details({
-  hasFinished,
-}: {
-  hasFinished: boolean;
-}) {
-  const { difficulty } = gameStore<StoreType>(function (state) {
-    return state;
-  });
-
-  return (
-    <div className="flex cursor-default flex-col items-center gap-y-1 rounded-lg border-2 border-stone-300 p-3 tracking-wider text-stone-300  ">
-      <span className="text-xs text-stone-500">Game Details</span>
-
-      <div className="flex cursor-default  gap-x-3 ">
-        <p title="Difficulty" className="flex items-center gap-x-1">
-          <SlSettings className="text-lg" />: {difficulty}
-        </p>
-
-        <Timer hasFinished={hasFinished} />
-      </div>
-    </div>
-  );
-});
-
-function Results({ points, totalChars, hasFinished }: ResultDetails) {
-  const { timeUsed } = timeStore<TimeStoreType>(function (state) {
-    return state;
-  });
-
-  const { difficulty } = gameStore<StoreType>(function (state) {
-    return state;
-  });
-
-  //isHovering over results
-  const [isHovering, setIsHovering] = useState<boolean>(false);
-  //get the highScore for the difficulty from localStorage
-  const [highScore, setHighScore] = useState(function (): string {
-    const score = localStorage.getItem(difficulty);
-
-    //if there is a highscore return it, if not return an empty object
-    return score || JSON.stringify({ accuracy: 0, speed: 0 });
-  });
-
-  const jsonHighScore = JSON.parse(highScore);
-
-  ///if there is a highscore
-  const accuracyHighScore = jsonHighScore.accuracy;
-  const speedHighScore = jsonHighScore.speed;
-
-  //all the points accumulated by the user
-  const totalPoints = points.reduce((acc, curr) => {
-    return acc + curr;
-  }, 0);
-
-  //the users typing accuracy && speed
-  const accuracy = (totalPoints / totalChars) * 100;
-  const speed = totalPoints / timeUsed;
-
-  //minimum speed & accuracy required to pass
-  const minAccuracy = 50;
-  const minSpeed = totalChars / defaultTime;
-
-  //what results are beign shown
-  const speedShown = isHovering ? speedHighScore : speed;
-  const accuracyShown = isHovering ? accuracyHighScore : accuracy;
-
-  function hanldeMouseEnter() {
-    setIsHovering(true);
-  }
-
-  function handleMouseLeave() {
-    setIsHovering(false);
-  }
-
-  useEffect(
-    function () {
-      if (
-        hasFinished &&
-        accuracy > accuracyHighScore &&
-        speed <= speedHighScore
-      ) {
-        const updatedScores = JSON.stringify({
-          accuracy,
-          speed: speedHighScore,
-        });
-
-        localStorage.setItem(difficulty, updatedScores);
-
-        setHighScore(updatedScores);
-
-        //alert user
-        toast.success("New Accuracy HighScore");
-      }
-
-      if (
-        hasFinished &&
-        speed > speedHighScore &&
-        accuracy <= accuracyHighScore
-      ) {
-        const updatedScores = JSON.stringify({
-          accuracy: accuracyHighScore,
-          speed,
-        });
-
-        //set the new
-        localStorage.setItem(difficulty, updatedScores);
-
-        setHighScore(updatedScores);
-
-        //alert user
-        toast.success("New Speed HighScore");
-      }
-
-      if (
-        hasFinished &&
-        accuracy > accuracyHighScore &&
-        speed > speedHighScore
-      ) {
-        const updatedScores = JSON.stringify({
-          accuracy,
-          speed,
-        });
-
-        localStorage.setItem(difficulty, updatedScores);
-
-        setHighScore(updatedScores);
-
-        toast.success("New HighScore");
-      }
-    },
-    [
-      accuracy,
-      accuracyHighScore,
-      speed,
-      speedHighScore,
-      difficulty,
-      hasFinished,
-    ],
-  );
-
-  return (
-    <div
-      title={`High Score for ${difficulty}`}
-      onMouseEnter={hanldeMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      className="flex cursor-default flex-col items-center  gap-y-1 rounded-lg border-2 border-stone-300 p-3  tracking-wider text-stone-300 "
-    >
-      {isHovering ? (
-        <span className="text-xs text-stone-500">High Scores</span>
-      ) : (
-        <span className="text-xs text-stone-500">
-          Hover to View High Scores
-        </span>
-      )}
-
-      <div className="flex cursor-default  gap-x-3 ">
-        <p
-          title="Accuracy"
-          className={`results ${isHovering ? "text-white" : ""} ${!isHovering && hasFinished && accuracy > 50 ? "text-green-500" : ""} ${!isHovering && hasFinished && accuracy < 50 ? "text-red-500" : ""}`}
-        >
-          <SlTarget className="text-xl" title="accuracy" />:{" "}
-          {accuracyShown.toFixed(2)}%
-          {hasFinished ? (
-            <span className="items-center text-xs"> (min. {minAccuracy}%)</span>
-          ) : null}
-        </p>
-
-        <p
-          title="Speed"
-          className={`results ${isHovering ? "text-white" : ""} ${!isHovering && hasFinished && speed > minSpeed ? "text-green-500" : ""} ${!isHovering && hasFinished && speed < minSpeed ? "text-red-500" : ""}`}
-        >
-          <SlSpeedometer className="text-xl" />: {speedShown.toFixed(2)}
-          <span className="text-sm">chars/s</span>
-          {hasFinished ? (
-            <span className="items-center text-xs">
-              {" "}
-              (min. {minSpeed}chars/s)
-            </span>
-          ) : null}
-        </p>
-      </div>
-    </div>
-  );
-}
-
-const ResetBtn = memo(function ResetBtn() {
-  const { resetGame } = gameStore<StoreType>(function (state) {
-    return state;
-  });
-
-  const { resetTime } = timeStore<TimeStoreType>(function (state) {
-    return state;
-  });
-
-  function handleReset() {
-    resetGame();
-    resetTime();
-  }
-
-  return (
-    <Button
-      title="Reset"
-      onClickFn={handleReset}
-      label={<VscDebugRestart className="text-xl" />}
-      rounded={true}
-    />
-  );
-});
