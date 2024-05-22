@@ -1,45 +1,59 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
+import { VscDebugStart } from "react-icons/vsc";
 
 import { StoreType, gameStore } from "../store";
 
 import { Button } from "./Button";
-
-import { VscDebugStart } from "react-icons/vsc";
 import { GrKeyboard } from "react-icons/gr";
 
 export function LandingPage() {
-  const { diffNum, difficulties, decDiff, changeDiff, incDiff, setIsPlaying } =
-    gameStore<StoreType>(function (state) {
-      return state;
-    });
+  const {
+    difficulty,
+    difficulties,
+    decDiff,
+    incDiff,
+    resetGame,
+    changeDiff,
+    setIsPlaying,
+  } = gameStore<StoreType>(function (state) {
+    return state;
+  });
 
-  function handleStart(): void {
-    setIsPlaying(true);
-  }
+  const handleStart = useCallback(
+    function handleStart(): void {
+      setIsPlaying(true);
+    },
+    [setIsPlaying],
+  );
 
   useEffect(
     function () {
       function startGame(e: KeyboardEvent): void {
-        //when the user clicks enter start the game
+        //when the user clicks enter key start the game
         if (e.key.toLowerCase() === "enter") {
-          setIsPlaying(true);
+          handleStart();
         }
 
-        //if the user clicks right go to next difficulty
-        if (e.key.toLowerCase() === "arrowright") {
-          incDiff();
+        //if they click escape, reset the game
+        if (e.key.toLowerCase() === "escape") {
+          resetGame();
         }
 
         //if user clicks left go to previous difficulty
         if (e.key.toLowerCase() === "arrowleft") {
           decDiff();
         }
+
+        //if user clicks right go to next difficulty
+        if (e.key.toLowerCase() === "arrowright") {
+          incDiff();
+        }
       }
       window.addEventListener("keyup", startGame);
 
       return () => window.removeEventListener("keyup", startGame);
     },
-    [setIsPlaying, incDiff, decDiff],
+    [handleStart, resetGame, incDiff, decDiff],
   );
 
   return (
@@ -75,7 +89,7 @@ export function LandingPage() {
                 title={diff}
                 onClickFn={() => changeDiff(i)}
                 label={diff}
-                isSelected={diffNum === i}
+                isSelected={difficulty === diff}
               />
             );
           })}

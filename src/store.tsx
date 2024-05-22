@@ -32,6 +32,7 @@ export const gameStore = create<StoreType>(function (set) {
     changeDiff: function (newDifficulty) {
       set((state: StoreType) => ({
         difficulty: state.difficulties[newDifficulty],
+        diffNum: newDifficulty,
       }));
     },
 
