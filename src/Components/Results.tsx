@@ -62,6 +62,7 @@ export function Results({ points, totalChars, hasFinished }: ResultDetails) {
 
   useEffect(
     function () {
+      //if new accuracy is greater than highscore for accuracy, update accuracy highscore
       if (
         hasFinished &&
         accuracy > accuracyHighScore &&
@@ -77,9 +78,10 @@ export function Results({ points, totalChars, hasFinished }: ResultDetails) {
         setHighScore(updatedScores);
 
         //alert user
-        toast.success("New Accuracy HighScore");
+        toast.success(`New Accuracy HighScore for ${difficulty}`);
       }
 
+      //if the new speed is greater than the highscore for speed, update speed highscore
       if (
         hasFinished &&
         speed > speedHighScore &&
@@ -96,9 +98,10 @@ export function Results({ points, totalChars, hasFinished }: ResultDetails) {
         setHighScore(updatedScores);
 
         //alert user
-        toast.success("New Speed HighScore");
+        toast.success(`New Speed HighScore for ${difficulty}`);
       }
 
+      //if both accuracy and speed are better than highs, update both
       if (
         hasFinished &&
         accuracy > accuracyHighScore &&
@@ -113,7 +116,7 @@ export function Results({ points, totalChars, hasFinished }: ResultDetails) {
 
         setHighScore(updatedScores);
 
-        toast.success("New HighScore");
+        toast.success(`New HighScore for ${difficulty}`);
       }
     },
     [

@@ -1,9 +1,11 @@
 import { useEffect } from "react";
-import { VscDebugStart } from "react-icons/vsc";
 
 import { StoreType, gameStore } from "../store";
 
 import { Button } from "./Button";
+
+import { VscDebugStart } from "react-icons/vsc";
+import { GrKeyboard } from "react-icons/gr";
 
 export function LandingPage() {
   const { diffNum, difficulties, decDiff, changeDiff, incDiff, setIsPlaying } =
@@ -43,8 +45,9 @@ export function LandingPage() {
   return (
     <main className="flex h-dvh w-full flex-col items-center justify-center space-y-6 text-white">
       <section className="space-y-2 text-center">
-        <h1 className="text-5xl font-bold uppercase tracking-widest">
+        <h1 className="flex items-center gap-x-1 text-5xl font-bold uppercase tracking-widest">
           Keyboard Master
+          <GrKeyboard className="text-6xl" />
         </h1>
 
         <p
