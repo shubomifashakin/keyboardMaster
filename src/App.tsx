@@ -14,7 +14,7 @@ export default function App() {
   });
 
   //get the width of the device to see if they are capable of playing the game
-  const [canPlay, setCanPay] = useState(function () {
+  const [canPlay, setCanPlay] = useState(function () {
     return window.innerWidth >= 1024;
   });
 
@@ -22,7 +22,7 @@ export default function App() {
   const [wantsToPlay, setWantsToPlay] = useState(true);
 
   function userWantsToPlay() {
-    setCanPay(true);
+    setCanPlay(true);
     setWantsToPlay(true);
   }
 
@@ -30,7 +30,7 @@ export default function App() {
   useEffect(function () {
     function eventFn() {
       const canPlay = window.innerWidth >= 1024;
-      setCanPay(canPlay);
+      setCanPlay(canPlay);
     }
 
     window.addEventListener("resize", eventFn);

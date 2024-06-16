@@ -32,8 +32,7 @@ export function Results({ points, totalChars, hasFinished }: ResultDetails) {
   const jsonHighScore = JSON.parse(highScore);
 
   ///if there is a highscore
-  const accuracyHighScore = jsonHighScore.accuracy;
-  const speedHighScore = jsonHighScore.speed;
+  const { accuracy: accuracyHighScore, speed: speedHighScore } = jsonHighScore;
 
   //all the points accumulated by the user
   const totalPoints = points.reduce((acc, curr) => {
